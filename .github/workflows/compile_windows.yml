@@ -4,9 +4,6 @@ name: Compile C source code on Windows instance
 
 # Define que la accion solo se activa cuando se visualiza un nuevo evento "trigger_sourcecode", enviado desde los repositorios de codigo fuente
 on:
-  push:
-    branches:
-        - main
   workflow_dispatch:
 
 jobs:
