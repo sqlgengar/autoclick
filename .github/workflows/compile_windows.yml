@@ -29,7 +29,7 @@ jobs:
       # Compile with gcc
       - name: Compile GCC
         run: |
-          gcc ./main.c ./main.exe
+          gcc ./main.c -o ./main.exe
 
       # Se debe proporcionar el mail y nombre que se reflejan cuando git aplica cambios en el repositorio.
       # Ademas se agregan todos los cambios al stage y se hace commit de los archivos locales de la isntancia con el valor del sha
