@@ -1,0 +1,49 @@
+# El resultado final de esta accion es producir un push del repositirio de build, con los archivos de los repositiorios de codigo fuente
+
+name: Compile C source code on Windows instance
+
+# Define que la accion solo se activa cuando se visualiza un nuevo evento "trigger_sourcecode", enviado desde los repositorios de codigo fuente
+on:
+  push:
+    branches:
+        - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    # Levanta la instancia con la siguiente imagen.
+    runs-on: windows-2022
+
+    steps:
+      # Traer archivos del repositorio de build.
+      # Se necesita el parametro persist-credentials en false para que no arrastre credenciales incorrectas a la hora de hacer push.
+      - name: Checkout build repo con branch default
+        uses: actions/checkout@v3
+        with:
+          persist-credentials: false
+
+      # Installar compile gcc
+      - name: Install compiler
+        id: install_cc
+        uses: rlalik/setup-cpp-compiler@master
+        with:
+          compiler: latest
+
+      # Se debe proporcionar el mail y nombre que se reflejan cuando git aplica cambios en el repositorio.
+      # Ademas se agregan todos los cambios al stage y se hace commit de los archivos locales de la isntancia con el valor del sha
+      # que disparo el action.
+      - name: Configurar Git y commit cambios
+        run: |
+          git config --local user.email "${{ secrets.EMAIL_GIT }}"
+          git config --local user.name "${{ github.repository_owner }}"
+          git add -A
+          git commit -m "${{ github.sha }}"
+
+      # Se debe proporcionar PAT y nombre de rama a la cual se hace push.
+      # El PAT se necesita ya que la ejecucion del action ocurre en una instancia vacia, por lo cual el repositorio de build pasa a ser
+      # un repo externo, no local, por lo cual se necesita mas scope que el autogenerador por el action.
+      - name: Push cambios en la rama default de build
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.TOKEN }}
+          branch: ${{ github.ref }}
