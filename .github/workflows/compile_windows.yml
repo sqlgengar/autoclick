@@ -22,12 +22,14 @@ jobs:
         with:
           persist-credentials: false
 
-      # Installar compile gcc
-      - name: Install compiler
-        id: install_cc
-        uses: rlalik/setup-cpp-compiler@master
-        with:
-          compiler: latest
+      # Install gcc using choco
+      - name: Instalar GCC
+        run: choco install mingw -y  # Instalar GCC a través de Chocolatey
+
+      # Compile with gcc
+      - name: Compile GCC
+        run: |
+          gcc ./main.c ./main.exe
 
       # Se debe proporcionar el mail y nombre que se reflejan cuando git aplica cambios en el repositorio.
       # Ademas se agregan todos los cambios al stage y se hace commit de los archivos locales de la isntancia con el valor del sha
